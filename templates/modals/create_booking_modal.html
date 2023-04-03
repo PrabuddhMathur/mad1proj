@@ -1,0 +1,33 @@
+<!--Create Show Modal-->
+<div class="modal fade" id="create_booking" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+	  <div class="modal-content" >
+		<div class="modal-header" style="background-color: #BBE38F">
+		  <h1 class="modal-title fs-5" id="staticBackdropLabel">Book Show</h1>
+		  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<form action="/create/booking", method="POST">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-4">
+                        <p class="modal-title">Name</p>
+                        <p class="modal-title"></p>
+                    </div>
+                    <div class="col-4">
+                        <p class="modal-title">Price</p>
+                        <p class="modal-title"></p>
+                    </div>
+                    <div class="col-4">
+                        <p class="modal-title">Total</p>
+                        <p class="modal-title"></p>
+                    </div>
+                </div>
+            </div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+		  <button type="submit" class="btn btn-success">Book</button>
+		</div>
+	  </form>
+	  </div>
+	</div>
+  </div>
