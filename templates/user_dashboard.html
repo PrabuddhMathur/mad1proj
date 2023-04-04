@@ -33,14 +33,50 @@
 		<div class="container ">
 			<div class="row align-items-center">
 				{% for show in shows %}
+				{% for show_venue in show_venues %}
+				{% if venue["venue_id"] == show_venue["venue_id"] and show["show_id"] == show_venue["show_id"] %}
 				<div class="card m-2 col-3">
 					<div class="card-body">
 						<h5 class="card-title mb-4">{{ show["show_name"] }}</h5>
 						<h5 class="card-title mb-4">Timing : {{ show["show_timing"] }}</h5>
-						<button class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#create_booking">Book</button>
+						<button class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#{{ show['show_id'] }}create_booking">Book</button>
 					</div>
 				</div>
-				{% include 'modals/create_booking_modal.html' %}
+				<!--Create Show Modal-->
+				<div class="modal fade" id="{{ show['show_id'] }}create_booking" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content" >
+						<div class="modal-header" style="background-color: #BBE38F">
+							<h1 class="modal-title fs-5" id="staticBackdropLabel">Book Show</h1>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<form action="/create/booking/{{ show['show_id'] }}", method="POST">
+							<div class="modal-body">
+								<div class="container">
+									<div class="row">
+										<p class="col-4 modal-title">Tickets</p>
+										<input class="col-4" type="number" name="booking_tickets"></input>
+									</div>
+									<div class="row">
+										<p class="col-4 modal-title">Price</p>
+										<p class="col-4 modal-title">{{ show['show_ticketprice'] }}</p>
+									</div>
+									<div class="row">
+										<p class="col-4 modal-title">Total</p>
+										<p class="col-4 modal-title"></p>
+									</div>
+								</div>
+							</div>
+						<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-success">Book</button>
+						</div>
+					</form>
+					</div>
+					</div>
+				</div>
+				{% endif %}
+				{% endfor %}
 				{% endfor %}
 			</div>
 		</div>

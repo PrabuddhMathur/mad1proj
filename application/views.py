@@ -48,12 +48,29 @@ def create_venue():
     db.session.commit()
     return redirect(url_for("views.admin_dashboard"))
 
+@views.route("/edit/venue/<int:venue_id>", methods=["POST"])
+def edit_venue(venue_id):
+    new_venue=venue.query.filter_by(venue_id=venue_id).first()
+
+    new_venue.venue_name=request.form.get('venue')
+    new_venue.venue_place=request.form.get('place')
+    new_venue.venue_location=request.form.get('location')
+    new_venue.venue_capacity=request.form.get('capacity')
+
+    from application.database import db
+    db.session.commit()
+    return redirect(url_for("views.admin_dashboard"))
+
 @views.route("/delete/venue/<int:venue_id>", methods=["GET"])
 def delete_venue(venue_id):
     venue_details=venue.query.get(venue_id)
+    show_venue_details=show_venue.query.filter_by(venue_id=venue_id).all()
+    show_details=[show.query.filter_by(show_id=i.show_id).first() for i in show_venue_details]
 
     from application.database import db
     db.session.delete(venue_details)
+    [db.session.delete(i) for i in show_venue_details]
+    [db.session.delete(i) for i in show_details]
     db.session.commit()
     return redirect(url_for('views.admin_dashboard'))
 
@@ -96,16 +113,25 @@ def edit_show(show_id):
 @views.route("/delete/show/<int:show_id>", methods=["GET"])
 def delete_show(show_id):
     show_details=show.query.get(show_id)
+    show_venue_details=show_venue.query.filter_by(show_id=show_id).first()
 
     from application.database import db
     db.session.delete(show_details)
+    db.session.delete(show_venue_details)
     db.session.commit()
 
     return redirect(url_for("views.admin_dashboard"))
 
-@views.route("/create/booking", methods=["POST"])
-def show_booking():
-    return redirect(url_for("views.user_login"))
+@views.route("/create/booking/<int:show_id>", methods=["POST"])
+def show_booking(show_id):
+    show_details=show.query.filter_by(show_id=show_id).first()
+    
+    booking_tickets=request.form.get('booking_tickets')
+    return redirect(url_for("views.user_dashboard"))
+
+# @views.route("/dwivedi", methods=["GET"])
+# def dwivedi():
+#     return render_template("dwivedi.html")
 
 @views.errorhandler(404)
 def page_not_found(e):
