@@ -19,7 +19,11 @@ def user_dashboard():
 @views.route("/user_bookings", methods=["GET","POST"])
 @login_required
 def user_bookings():
-    return render_template("user_bookings.html")
+    venues=venue.query.all()
+    shows=show.query.all()
+    show_venues=show_venue.query.all()
+    show_bookings=bookings.query.all()
+    return render_template("user_bookings.html", venues=venues, shows=shows, show_venues=show_venues,show_bookings=show_bookings)
 
 @views.route("/admin_dashboard", methods=["GET", "POST"])
 @login_required
@@ -76,6 +80,9 @@ def delete_venue(venue_id):
 
 @views.route("/create/show/<int:venue_id>", methods=["POST"])
 def create_show(venue_id):
+
+    venue_=venue.query.filter_by(venue_id=venue_id).first()
+
     show_name=request.form.get('show_name')
     show_timing=request.form.get('show_timing')
     show_rating=request.form.get('show_rating')
@@ -83,27 +90,32 @@ def create_show(venue_id):
     show_ticketprice=request.form.get('show_price')
     show_available_tickets=request.form.get('available_tickets')
 
-    from application.database import db
-    new_show=show(show_name=show_name, show_timing=show_timing, show_rating=show_rating, show_tags=show_tags, show_ticketprice=show_ticketprice)
+    if int(show_available_tickets)>venue_.venue_capacity:
+        flash("Tickets cannot be more than venue capacity!")
+    else:
+        from application.database import db
+        new_show=show(show_name=show_name, show_timing=show_timing, show_rating=show_rating, show_tags=show_tags, show_ticketprice=show_ticketprice)
 
-    db.session.add(new_show)
-    db.session.flush()
-    db.session.refresh(new_show)
+        db.session.add(new_show)
+        db.session.flush()
+        db.session.refresh(new_show)
 
-    new_show_venue=show_venue(show_id=new_show.show_id, venue_id=venue_id, available_tickets=show_available_tickets)
-    db.session.add(new_show_venue)
-    db.session.commit()
-    return redirect(url_for("views.admin_dashboard"))
+        new_show_venue=show_venue(show_id=new_show.show_id, venue_id=venue_id, available_tickets=show_available_tickets)
+        db.session.add(new_show_venue)
+        db.session.commit()
+        return redirect(url_for("views.admin_dashboard"))
 
 @views.route("/edit/show/<int:show_id>", methods=["POST"])
 def edit_show(show_id):
     new_show=show.query.filter_by(show_id=show_id).first()
+    new_show_venue=show_venue.query.filter_by(show_id=show_id).first()
 
     new_show.show_name=request.form.get('show_name')
     new_show.show_timing=request.form.get('show_timing')
     new_show.show_rating=request.form.get('show_rating')
     new_show.show_tags=request.form.get('show_tags')
     new_show.show_ticketprice=request.form.get('show_price')
+    new_show_venue.show_available_tickets=request.form.get('available_tickets')
 
     from application.database import db
     db.session.commit()
@@ -124,14 +136,22 @@ def delete_show(show_id):
 
 @views.route("/create/booking/<int:show_id>", methods=["POST"])
 def show_booking(show_id):
-    show_details=show.query.filter_by(show_id=show_id).first()
-    
     booking_tickets=request.form.get('booking_tickets')
+    show_venue_details=show_venue.query.filter_by(show_id=show_id).first()
+
+    from application.database import db
+
+    new_booking=bookings(booking_tickets=booking_tickets, user_id=current_user.id, show_venue_id=show_venue_details.show_venue_id)
+    db.session.add(new_booking)
+    db.session.commit()
     return redirect(url_for("views.user_dashboard"))
 
-# @views.route("/dwivedi", methods=["GET"])
-# def dwivedi():
-#     return render_template("dwivedi.html")
+@views.route("/create/rating/<int:show_id>", methods=["POST"])
+def show_rating(show_id):
+    return redirect(url_for('views.user_bookings'))
+@views.route("/dwivedi", methods=["GET"])
+def dwivedi():
+    return render_template("dwivedi.html")
 
 @views.errorhandler(404)
 def page_not_found(e):
