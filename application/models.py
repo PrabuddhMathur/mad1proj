@@ -39,11 +39,11 @@ class roles_users(db.Model):
 class venue(db.Model):
     __tablename__='venue'
     venue_id=db.Column(db.Integer, autoincrement=True, primary_key=True)
-    venue_name=db.Column(db.String)
+    venue_name=db.Column(db.String, unique=True)
     venue_place=db.Column(db.String)
     venue_location=db.Column(db.String)
     venue_capacity=db.Column(db.Integer)
-    venue_show=db.relationship("show", secondary="show_venue")
+    venue_show=db.relationship("show", secondary="show_venue", backref="show_venue")
 
 class show(db.Model):
     __tablename__='show'
@@ -59,7 +59,7 @@ class bookings(db.Model):
     booking_id=db.Column(db.Integer, autoincrement=True, primary_key=True)
     booking_tickets=db.Column(db.Integer, nullable=False)
     user_id=db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    show_venue_id=db.Column(db.Integer, db.ForeignKey("show_venue.show_venue_id"), nullable=False)
+    show_id=db.Column(db.Integer, db.ForeignKey("show.show_id"), nullable=False)
     user_rating=db.Column(db.Integer)
 
 class show_venue(db.Model):

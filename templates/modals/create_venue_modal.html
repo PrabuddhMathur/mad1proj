@@ -14,19 +14,24 @@
               </div>
               <div class="row m-1">
                   <label class="form-label col-4 align-self-center">Venue Name</label>
-                  <input class="col-4" type="text" name="venue">
+                  <input class="col-5" type="text" name="venue">
               </div>
               <div class="row m-1">
                   <label class="form-label col-4" for="">Place</label>
-                  <input class="col-4" type="text" name="place">
+                  <input class="col-5" type="text" name="place">
               </div>
               <div class="row m-1">
-                  <label class="form-label col-4" for="">Location</label>
-                  <input class="col-4" type="text" name="location">
+                  <label class="form-label col-4" for="location">Location</label>
+                  <select class='col-5' name="location" id="location">
+                    <option selected>-- Select Location --</option>
+                    {% for location in locations %}
+                    <option value="{{ location }}">{{ location }}</option>
+                    {% endfor %}
+                  </select>
               </div>
               <div class="row m-1">
                   <label class="form-label col-4" for="">Capacity</label>
-                  <input class="col-4" type="number" name="capacity">
+                  <input class="col-5" type="number" name="capacity">
               </div>
           </div>
         </div>

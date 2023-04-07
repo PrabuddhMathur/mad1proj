@@ -8,32 +8,52 @@
 	<script async src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #E4F0AF">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">User's Bookings</a>
-	<div class="row">
-		<div class="col-8">
-			<div class="collapse navbar-collapse" id="navbarSupportedContent">
-				<ul class="navbar-nav ">
-					<a class="nav-item btn btn-success mx-2" href="#">Profile</a>
-					<a class="nav-item btn btn-success mx-2" href="{{ url_for('views.user_dashboard') }}">Dashboard</a>
-					<a class="nav-item btn btn-success mx-2" href="{{ url_for('auth.logout') }}">Logout</a>
-				</ul>
-			</div>
+	<nav class="navbar navbar-expand-lg navbar-light p-0" style="background-color: #E4F0AF">
+		<div class="container-fluid">
+		  <a class="navbar-brand" href="{{ url_for('views.user_dashboard') }}">User Dashboard</a>
+		  <div class="d-flex flex-row-reverse">
+			  <div class="collapse navbar-collapse col-4 " id="navbarSupportedContent">
+				  <ul class="navbar-nav">
+					  <li class="nav-item p-2 my-2 text-cener">{% if current_user.is_authenticated %}Hi {{current_user.username}}, Welcome.{% endif %}</li>
+					  <li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('views.user_dashboard') }}">Dashboard</a></li>
+					  <li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('views.all_shows') }}">All Shows</a></li>
+					  <li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('auth.logout') }}">Logout</a></li>
+				  </ul>
+			  </div>		
+		  </div>
 		</div>
-	</div>
-  </div>
-</nav>
+	  </nav>
 <div class="container-fluid">
 	<div class="row justify-content-center">
-		{% for show_booking in show_bookings %}
-		{% if current_user['id']==show_booking['user_id'] %}
-		{% for show_venue in show_venues %}
 		{% for show in shows %}
-		{% if show_venue['show_id']==show['show_id'] %}
-			<div class="card col-2 m-4 p-0">
-				<div class="card-header" style="background-color: #D6ECA4"><p class="card-text">{{ show["show_name"] }}</p></div>
+		{% for show_booking in show_bookings %}
+		{% if show_booking['show_id']==show['show_id'] and show_booking['user_id']==current_user['id'] %}
+			<div class="card col-3 m-4 p-0">
+				<div class="card-header" style="background-color: #D6ECA4">
+					<h5 class="card-text">{{ show["show_name"] }}</h5>
+				</div>
 				<div class="card-body">
+					{% for this_show in show['show_venue'] %}
+					<div class="row">
+						<div class="col-6">
+							<p class="card-text text-end m-1 text-nowrap">Venue : </p>
+							<p class="card-text text-end m-1 text-nowrap">Location : </p>
+							<p class="card-text text-end m-1 text-nowrap">Tickets Booked : </p>
+							<p class="card-text text-end m-1 text-nowrap">Show Timing : </p>
+							<p class="card-text text-end m-1 text-nowrap">Your rating : </p>
+						</div>
+
+						<div class="col-6">
+							<p class="card-text text-start m-1 text-nowrap">{{ this_show['venue_name'] }}</p>
+							<p class="card-text text-start m-1 text-nowrap">{{ this_show['venue_location'] }}</p>
+							<p class="card-text text-start m-1 text-nowrap">{{ show_booking['booking_tickets'] }}</p>
+							<p class="card-text text-start m-1 text-nowrap">{{ show['show_timing'] }}</p>
+							<p class="card-text text-start m-1 text-nowrap">{{ show_booking['user_rating'] }}</p>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+				<div class="card-footer">
 					<div class="container">
 						<div class="row">
 							<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{ show['show_id'] }}show_rating">Rate</button>
@@ -52,41 +72,25 @@
 						<form action="/create/rating/{{ show['show_id'] }}" method="POST">
 							<div class="modal-body">
 								<div class="row justify-content-center">
-									<div class="col-2 form-check">
-										<input type="radio" class="form-check-input" id="1"></input>
-										<label for="1" class="form-check-label">1</label>
+									{% for i in range(1, 11) %}
+									<div class="col-1">
+										<input type="radio" class="form-check-input" id="rating{{i}}" name="rating" value="{{i}}">
+										<label for="rating{{i}}">{{i}}</label>
 									</div>
-									<div class="col-2 form-check">
-										<input type="radio" class="form-check-input" id="2"></input>
-										<label for="2" class="form-check-label">2</label>
-									</div>
-									<div class="col-2 form-check">
-										<input type="radio" class="form-check-input" id="3"></input>
-										<label for="3" class="form-check-label">3</label>
-									</div>
-									<div class="col-2 form-check">
-										<input type="radio" class="form-check-input" id="4"></input>
-										<label for="4" class="form-check-label">4</label>
-									</div>
-									<div class="col-2 form-check">
-										<input type="radio" class="form-check-input" id="5"></input>
-										<label for="5" class="form-check-label">5</label>
-									</div>
+									{% endfor %}
 								</div>
 							</div>
+							<div class="modal-footer">
+								<button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+								<button class="btn btn-success" type="submit">Submit Rating</button>
+							</div>
 						</form>
-						<div class="modal-footer">
-							<button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-							<button class="btn btn-success" type="submit">Submit Rating</button>
-						</div>
 					</div>
 				</div>
 			</div>
-			{% endif %}
-			{% endfor %}
-			{% endfor %}
-			{% endif %}
-			{% endfor %}
+		{% endif %}
+		{% endfor %}
+		{% endfor %}
 	</div>
 </div>
 </body>
