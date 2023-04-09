@@ -12,10 +12,13 @@ class LocalDevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI="sqlite:///"+os.path.join(SQLITE_DB_DIR, "testdb.sqlite3")
     DEBUG=True
     SECRET_KEY="ksaldf234iuo234jbkj"
-#    SECURITY_PASSWORD_HASH="bcrypt"
-#    SECURITY_PASSWORD_SALT="laksdnvlwr809384asnvlkj"
-#    SECURITY_REGISTERABLE=True
-#    SECURITY_SEND_REGISTER_EMAIL=False
-#    SECURITY_LOGIN_USER_TEMPLATE="security/user_login.html"
-#    SECURITY_REGISTER_USER_TEMPLATE="security/user_register.html"
+    SECURITY_PASSWORD_HASH="bcrypt"
+    SECURITY_PASSWORD_SALT="laksdnvlwr809384asnvlkj"
+    SECURITY_REGISTERABLE=True
+    SECURITY_SEND_REGISTER_EMAIL=False
+    SECURITY_LOGIN_USER_TEMPLATE="security/user_login.html"
+    SECURITY_REGISTER_USER_TEMPLATE="security/user_register.html"
+    WTF_CSRF_ENABLED=False
+    SECURITY_CONFIRMABLE=False
+    SECURITY_USERNAME_ENABLE=True
 

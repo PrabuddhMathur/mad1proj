@@ -1,40 +1,26 @@
-from .database import db
+from .database import *
 from flask_security import UserMixin, RoleMixin
 
-class user(db.Model, UserMixin):
+
+roles_users = db.Table('roles_users',
+        db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+        db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))    
+
+class User(db.Model, UserMixin):
     __tablename__='user'
     id=db.Column(db.Integer, autoincrement=True, primary_key=True)
-    email=db.Column(db.String)
-    username=db.Column(db.String, unique=True)
+    email=db.Column(db.String, unique=True)
+    username=db.Column(db.String)
     password=db.Column(db.String(255))
     active=db.Column(db.Boolean())
-    roles=db.relationship('role', secondary="roles_users")
-    def is_active(self):
-    #all users are active
-        return True 
+    roles=db.relationship('Role', secondary="roles_users")
+    fs_uniquifier = db.Column(db.String, unique=True, nullable=False)
 
-    def get_id(self):
-        # returns the user e-mail. not sure who calls this
-        return self.email
-
-    def is_authenticated(self):
-        return self.authenticated
-
-    def is_anonymous(self):
-        # False as we do not support annonymity
-        return False
-
-
-class role(db.Model, RoleMixin):
+class Role(db.Model, RoleMixin):
     __tablename__='role'
-    role_id=db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id=db.Column(db.Integer, primary_key=True, autoincrement=True)
     name=db.Column(db.String(80), unique=True)
-
-class roles_users(db.Model):
-    __tablename__='roles_users'
-    roles_users_id=db.Column(db.Integer, autoincrement=True, primary_key=True)
-    user_id=db.Column(db.Integer, db.ForeignKey("user.id"))
-    role_id=db.Column(db.Integer, db.ForeignKey("role.role_id"))
+    description = db.Column(db.String(255))
 
 class venue(db.Model):
     __tablename__='venue'

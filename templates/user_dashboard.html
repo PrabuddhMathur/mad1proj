@@ -10,13 +10,13 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light p-0" style="background-color: #E4F0AF">
   <div class="container-fluid">
-	<a class="navbar-brand" href="{{ url_for('views.user_dashboard') }}">User Dashboard</a>
+	<a class="navbar-brand" href="{{ url_for('user_dashboard') }}">User Dashboard</a>
 	<div class="d-flex flex-row-reverse">
 		<div class="collapse navbar-collapse col-4 " id="navbarSupportedContent">
 			<ul class="navbar-nav">
-				<li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('views.all_shows') }}">All Shows</a></li>
-				<li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('views.user_bookings') }}">Bookings</a></li>
-				<li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('auth.logout') }}">Logout</a></li>
+				<li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('all_shows') }}">All Shows</a></li>
+				<li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('user_bookings') }}">Bookings</a></li>
+				<li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('security.logout') }}">Logout</a></li>
 			</ul>
 		</div>		
 	</div>
@@ -28,29 +28,96 @@
 		  <h1>{% if current_user.is_authenticated %}Hi {{current_user.username}}, Welcome!{% endif %}</h1>
 		</div>
 	</div>
-	<div class="row m-2">
-		<div class="row">
-			<p class="fs-4 m-0 text-center">Search all the shows based on categories!</p>
-			
-			<form id="select-form" action="/user_dashboard/search/{{ search_value }}" method="GET">
-				<div class="row  my-5 justify-content-center">
-					{% for i in search_by_category %}
-					<div class="col-2 from-check form-check-inline">
-						<input type="radio" class="form-check-input" id="{{i}}" name="search_value" value="{{i}}" required>
-						<label class="form-check-label" for="{{i}}">Search by {{i}}</label>
-					</div>
-					{% endfor %}
+	<div class="row justify-content-center m-2">
+		<p class="fs-4 m-4 text-center">Search all the shows based on categories!</p>
+		<form action="/user_dashboard/search" method="GET">
+			<div class="row justify-content-center">
+				<div class="col-2">
+					<select class="form-control border border-success border-2" id="search_by" onchange="changeQuery();"  required>
+						<option class="text-center" disabled selected value="">-- Search by --</option>
+						{% for i in search_by_category %}
+							<option class="text-center" value="{{i}}">Search by {{i}}</option>
+						{% endfor %}
+					</select>
 				</div>
-				
-				<div class="row my-5 justify-content-center text-center">
-					<div class="col-4">
-						<button class="btn btn-success" type="submit">Search</button>
-					</div>
+
+				<div class="col-8">
+					<input class="form-control border border-success border-2" id="inputfield" name="search_query" list="dataOpt" autocomplete="off" placeholder="Type to search..." required>
+					<datalist id="dataOpt"></datalist>
 				</div>
-			</form>
-			
-		</div>
+			</div>
+			<div class="row justify-content-center m-4">
+				<div class="col-3 text-center">
+					<button class="btn btn-success" type="submit">Search</button>
+				</div>
+			</div>
+		</form>
 	</div>
 </div>
+<script >
+function changeQuery(){
+		var optSelect = document.getElementById('search_by');
+		var option = optSelect.options[optSelect.selectedIndex].value;
+	
+		optSelect.name='search_value'
+		var dataOpt = document.getElementById('dataOpt');
+		dataOpt.innerHTML = '';
+
+		if (option === 'Show') {
+			
+			{% for show in available_shows %}
+				var opt = document.createElement('option');
+				opt.value = '{{ show }}';
+				dataOpt.appendChild(opt);
+			{% endfor %}
+		}
+
+		else if(option==='Venue'){
+			inputfield.innerHTML=''
+
+			{% for venue in venues %}
+				var opt=document.createElement("option");
+				opt.value="{{ venue['venue_name'] }}";
+				dataOpt.appendChild(opt);
+			{% endfor %}
+		}
+		else if(option==='Location'){
+			inputfield.innerHTML=''
+
+			{% for location in available_locations %}
+				var opt=document.createElement("option");
+				opt.value="{{ location }}";
+				dataOpt.appendChild(opt);
+			{% endfor %}
+		}
+		else if(option==='Timing'){
+			inputfield.innerHTML=''
+
+			{% for timing in available_timings %}
+				var opt=document.createElement("option");
+				opt.value="{{ timing }}"
+				dataOpt.appendChild(opt)
+			{% endfor %}
+		}
+		else if(option==='Genre'){
+			inputfield.innerHTML=''
+
+			{% for genre in available_genres %}
+				var opt=document.createElement("option");
+				opt.value="{{ genre }}"
+				dataOpt.appendChild(opt)
+			{% endfor %}
+		}
+		else if(option==='Rating'){
+			inputfield.innerHTML=''
+			{% for i in range(1, 11) %}
+				var opt=document.createElement("option");
+				opt.value="{{ i }}"
+				dataOpt.appendChild(opt)
+			{% endfor %}
+		}
+
+	}
+</script>
 </body>
 </html>

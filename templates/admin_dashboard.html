@@ -10,13 +10,13 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light p-0" style="background-color: #E4F0AF">
 	<div class="container-fluid">
-	  <a class="navbar-brand" href="{{ url_for('views.admin_dashboard') }}">Admin Dashboard</a>
+	  <a class="navbar-brand" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
 	  <div class="d-flex flex-row-reverse">
 		  <div class="collapse navbar-collapse col-4 " id="navbarSupportedContent">
 			  <ul class="navbar-nav">
 				  <li class="nav-item p-2 my-2 text-center">{% if current_user.is_authenticated %}Hi {{current_user.username}}, Welcome.{% endif %}</li>
-				  <li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('views.admin_summary') }}">Summary</a></li>
-				  <li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('auth.logout') }}">Logout</a></li>
+				  <li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('admin_summary') }}">Summary</a></li>
+				  <li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('security.logout') }}">Logout</a></li>
 			  </ul>
 		  </div>		
 	  </div>
@@ -46,13 +46,14 @@
 							<div class="card-body">
 								<div class="container">
 									<div class="row justify-content-center">
+										<p class="col-12 card-text text-center h6">Available capacity: {{ venue['venue_capacity'] }}</p>
 										<p class="col-12 card-text text-center h6">Available Shows</p>
 									</div>
 									<div class="row">
 									{% for show in shows %}
 									{% for show_venue in show_venues %}
 									{% if venue["venue_id"] == show_venue["venue_id"] and show["show_id"] == show_venue["show_id"] %}
-									<div class="card col-3 m-2 p-0">
+									<div class="card col-3 m-4 p-0">
 										<div class="card-header p-2" style="background-color: #BBE38F">
 											<div class="row justify-content-center">
 												<h6 class="col-6 card-title text-center m-0">{{ show["show_name"] }}</h6>
@@ -101,11 +102,9 @@
 																<label class="form-label col-4" for="timing">Timing</label>
 																<select class="col-6" name="show_timing" id="timing">
 																	<option selected>{{ show['show_timing'] }}</option>
-																	<option value="9AM - 12PM">9AM - 12PM</option>
-																	<option value="12PM - 3PM">12PM - 3PM</option>
-																	<option value="3PM - 6PM">3PM - 6PM</option>
-																	<option value="6PM - 9PM">6PM - 9PM</option>
-																	<option value="9PM - 12AM">9PM - 12AM</option>
+																	{% for timing in timings %}
+																	<option value="{{ timing }}">{{ timing }}</option>
+																	{% endfor %}
 																</select>
 															</div>
 															<div class="row m-1">
@@ -124,7 +123,7 @@
 															</div>
 															<div class="row m-1">
 																<label class="form-label col-4" for="">Available Tickets</label>
-																<input class="col-6" max="{{ venue['venue_capacity'] }}" type="number" name="available_tickets" value="{{ show_venue['available_tickets'] }}">
+																<input class="col-6" max="{{ venue['venue_capacity'] }}" type="number" name="available_tickets" value="{{ show_venue['available_tickets'] }}" required>
 															</div>
 														</div>
 														</div>
@@ -214,22 +213,20 @@
 														</div>
 														<div class="row m-1">
 															<label class="form-label col-4 align-self-center">Show Name</label>
-															<input class="col-6" type="text" name="show_name">
+															<input class="col-6" type="text" name="show_name" required>
 														</div>
 														<div class="row m-1">
 															<label class="form-label col-4" for="timing">Timing</label>
-															<select class="col-6" name="show_timing" id="timing">
-																<option selected>-- Select Timing --</option>
-																<option value="9AM - 12PM">9AM - 12PM</option>
-																<option value="12PM - 3PM">12PM - 3PM</option>
-																<option value="3PM - 6PM">3PM - 6PM</option>
-																<option value="6PM - 9PM">6PM - 9PM</option>
-																<option value="9PM - 12AM">9PM - 12AM</option>
+															<select class="col-6" name="show_timing" id="timing" required>
+																<option value="" selected>-- Select Timing --</option>
+																{% for timing in timings %}
+																<option value="{{ timing }}">{{ timing }}</option>
+																{% endfor %}
 															</select>
 														</div>
 														<div class="row m-1">
 															<label class="form-label col-4" for="genre">Genre</label>
-															<select class="col-6" name="show_tags" id="genre">
+															<select class="col-6" name="show_tags" id="genre" required>
 																<option>-- Select Genre --</option>
 																{% for genre in genres %}
 																<option value="{{ genre }}">{{ genre }}</option>
@@ -239,11 +236,11 @@
 														<div class="row m-1">
 															<label class="form-label col-4" for="">Ticket Price</label>
 															<span class="col-1 input-group-addon">&#x20B9;</span>
-															<input class="col-5" type="number" name="show_price">
+															<input class="col-5" type="number" name="show_price" required>
 														</div>
 														<div class="row m-1">
 															<label class="form-label col-4" for="">Available Tickets</label>
-															<input class="col-6" max="{{ venue['venue_capacity'] }}" type="number" name="available_tickets">
+															<input class="col-6" max="{{ venue['venue_capacity'] }}" type="number" name="available_tickets" required>
 														</div>
 													</div>
 												</div>

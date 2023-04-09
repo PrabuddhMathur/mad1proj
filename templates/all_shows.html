@@ -9,14 +9,14 @@
 <body>
 	<nav class="navbar navbar-expand-lg navbar-light p-0" style="background-color: #E4F0AF">
 		<div class="container-fluid">
-		  <a class="navbar-brand" href="{{ url_for('views.user_dashboard') }}">User Dashboard</a>
+		  <a class="navbar-brand" href="{{ url_for('user_dashboard') }}">User Dashboard</a>
 		  <div class="d-flex flex-row-reverse">
 			  <div class="collapse navbar-collapse col-4 " id="navbarSupportedContent">
 				  <ul class="navbar-nav">
 					  <li class="nav-item p-2 my-2 text-cener">{% if current_user.is_authenticated %}Hi {{current_user.username}}, Welcome.{% endif %}</li>
-					  <li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('views.user_dashboard') }}">Dashboard</a></li>
-					  <li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('views.user_bookings') }}">Bookings</a></li>
-					  <li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('auth.logout') }}">Logout</a></li>
+					  <li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('user_dashboard') }}">Dashboard</a></li>
+					  <li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('user_bookings') }}">Bookings</a></li>
+					  <li class="nav-item p-2"><a class="nav-item btn btn-success" href="{{ url_for('security.logout') }}">Logout</a></li>
 				  </ul>
 			  </div>
 		  </div>
@@ -61,11 +61,15 @@
 							</div>
 							<div class="card-footer">
 								<div class="row justify-content-center">
+									{% if show_venue['available_tickets']==0 %}
+									<button class="btn btn-secondary" disabled>HOUSEFULL</button>
+									{% else %}
 									<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{ show['show_id'] }}create_booking">Book</button>
+									{% endif %}
 								</div>
 							</div>
 						</div>
-						<!--Create Show Modal-->
+						<!--Create Booking Modal-->
 						<div class="modal fade" id="{{ show['show_id'] }}create_booking" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 							<div class="modal-dialog modal-dialog-centered">
 							<div class="modal-content" >
@@ -81,23 +85,19 @@
 											</div>
 											<div class="row justify-content-center">
 												<p class="col-4 modal-title">Tickets</p>
-												<input class="col-4" type="number" name="booking_tickets"></input>
+												<input class="col-4" min="1" max="{{ show_venue['available_tickets'] }}" type="number" name="booking_tickets"></input>
 											</div>
 											<div class="row justify-content-center">
 												<p class="col-4 modal-title">Price</p>
 												<p class="col-4 modal-title">₹{{ show['show_ticketprice'] }}</p>
 											</div>
-											<div class="row justify-content-center">
-												<p class="col-4 modal-title">Total</p>
-												<p class="col-4 modal-title"></p>
-											</div>
 										</div>
 									</div>
-								<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-								<button type="submit" class="btn btn-success">Book</button>
-								</div>
-							</form>
+									<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+									<button type="submit" class="btn btn-success">Book</button>
+									</div>
+								</form>
 							</div>
 							</div>
 						</div>

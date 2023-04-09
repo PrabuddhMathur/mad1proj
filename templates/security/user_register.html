@@ -9,7 +9,7 @@
 	<body>
 		<div class="container mv-8">
 			<div class="row justify-content-center">
-			<form action="{{ url_for('auth.register') }}" method="POST">
+			<form action="{{ url_for('security.register') }}" method="POST">
 				<div class="card col-8">
 					<div class="card-body">
 						<h3 class="card-title text-center">User Registeration</h5>
@@ -26,14 +26,14 @@
 							<label for="floatingPassword">Password</label>
 						</div>
 						<div class="form-floating mb-3">
-							<input id="floatingRePassword" class="form-control" type="password" placeholder="RePassword" name="repassword">
-							<label for="floatingRePassword">Re-Enter Password</label>
+							<input id="floatingpassword_confirm" class="form-control" type="password" placeholder="password_confirm" name="password_confirm">
+							<label for="floatingpassword_confirm">Re-Enter Password</label>
 						</div>
 						<div class="row justify-content-center text-end m-2">
-							<div class="col"><a href="/">Click here for User Login</a></div>
+							<div class="col"><a href="/login">Click here for User Login</a></div>
 						</div>
 						<div class="row justify-content-center text-center">
-							<div class="col"><button class="btn btn-success" type="submit">Sign Up</button></div>
+							<div class="col"><input class="btn btn-success" value="Register" name="submit" type="submit"></input></div>
 						</div>
 					</div>
 				</div>
