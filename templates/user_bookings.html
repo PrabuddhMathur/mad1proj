@@ -34,6 +34,7 @@
 				</div>
 				{% for this_show in show['show_venue'] %}
 				{% for show_venue in show_venues %}
+				{% if show_venue['venue_id']==this_show['venue_id'] %}
 				<div class="card-body">
 					<div class="row">
 						<div class="col-6">
@@ -58,46 +59,49 @@
 						<div class="row">
 							<button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#{{ show_booking['booking_id'] }}edit_booking">Edit Booking details</button>
 							<button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#{{ show_booking['booking_id'] }}show_rating">Rate Show</button>
-
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- Edit Bookings Modal -->
-			<div class="modal fade" id="{{ show_booking['booking_id'] }}edit_booking" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered modal-md">
-					<div class="modal-content">
-						<div class="modal-header" style="background-color: #D6ECA4">
-							<h1 class="modal-title fs-5" id="staticBackdropLabel">Edit booking for {{ show['show_name'] }}</h1>
-							<button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-						</div>
-						<form action="/edit/booking/{{ show_booking['booking_id'] }}" method="POST">
-							<div class="modal-body">
-								<div class="container">
-									<div class="row text-center">
-										<h4 class="col-12 modal-title">{{ show['show_name'] }}</h4>
-									</div>
-									<div class="row justify-content-center m-2">
-										<p class="col-4 modal-title">Tickets booked</p>
-										<input class="col-4" min="1" max="{{ show_venue['available_tickets'] }}" type="number" name="booking_tickets"  value="{{ show_booking['booking_tickets'] }}" required>
-									</div>
-									<div class="row justify-content-center m-2">
-										<p class="col-4 modal-title">Price</p>
-										<input class="col-4" type="number"  value="{{ show['show_ticketprice'] }}" disabled>
+							<div class="modal fade" id="{{ show_booking['booking_id'] }}edit_booking" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered modal-md">
+									<div class="modal-content">
+										<div class="modal-header" style="background-color: #D6ECA4">
+											<h1 class="modal-title fs-5" id="staticBackdropLabel">Edit booking for {{ show['show_name'] }}</h1>
+											<button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+										</div>
+										<form action="/edit/booking/{{ show_booking['booking_id'] }}" method="POST">
+											<div class="modal-body">
+												<div class="container">
+													<div class="row text-center">
+														<h4 class="col-12 modal-title">{{ show['show_name'] }}</h4>
+													</div>
+													<div class="row justify-content-center m-2">
+														<p class="col-4 modal-title">Tickets booked</p>
+														<input class="col-4" min="1" max="{{ show_venue['available_tickets'] }}" type="number" name="booking_tickets"  value="{{ show_booking['booking_tickets'] }}" required>
+													</div>
+													<div class="row justify-content-center m-2">
+														<p class="col-4 modal-title">Price</p>
+														<input class="col-4" type="number" min="0" value="{{ show['show_ticketprice'] }}" disabled>
+													</div>
+												</div>
+											</div>
+											<div class="modal-footer">
+												<button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+												<button class="btn btn-success" type="submit">Save Edits</button>
+												<a  href="/delete/booking/{{ show_booking['booking_id'] }}" type="button" class="btn btn-danger" id="venue_btn">Delete</a>
+											</div>
+									</form>
 									</div>
 								</div>
 							</div>
-							<div class="modal-footer">
-								<button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
-								<button class="btn btn-success" type="submit">Save Edits</button>
-								<a  href="/delete/booking/{{ show_booking['booking_id'] }}" type="button" class="btn btn-danger" id="venue_btn">Delete</a>
-							</div>
-					</form>
+							
+						</div>
+						
 					</div>
 				</div>
+				{% endif %}
+				{% endfor %}
+				{% endfor %}
 			</div>
-			{% endfor %}
-			{% endfor %}
+			<!-- Edit Bookings Modal -->
+			
 			<!--Rate Show Modal-->
 			<div class="modal fade" id="{{ show_booking['booking_id'] }}show_rating" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 				<div class="modal-dialog modal-dialog-centered modal-md">

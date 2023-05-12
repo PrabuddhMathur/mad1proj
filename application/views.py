@@ -3,11 +3,18 @@ from flask_security import login_required, current_user,roles_required
 from .models import *
 import html
 from flask import current_app as app
+import matplotlib.pyplot as plt
+import matplotlib
+
+matplotlib.use("Agg")
 
 @app.route("/")
 def home():
     return redirect('/user_dashboard')
 
+@app.route("/admin_login")
+def admin_login():
+    return render_template("security/admin_login.html")
 @app.route("/user_dashboard", methods=["GET", "POST"])
 @login_required
 def user_dashboard():
@@ -95,7 +102,40 @@ def admin_dashboard():
 
 @app.route("/admin_summary", methods=["GET", "POST"])
 @login_required
+@roles_required('admin')
 def admin_summary():
+    show_venues=show_venue.query.all()
+    x=[]
+    y=[]
+    for i in show_venues:
+        show_details=show.query.filter_by(show_id=i.show_id).first()
+        x.append(show_details.show_name)
+        y.append(i.available_tickets)
+
+
+    plt.bar(x,y, width=0.5)
+    plt.xlabel('Show Name')
+    plt.ylabel('Available Tickets')
+    
+    plt.savefig(f"./static/{current_user.id}_show_venue.png")
+    plt.clf()
+
+    venues=venue.query.all()
+    x=[]
+    y=[]
+    for i in venues:
+        venue_details=venue.query.filter_by(venue_id=i.venue_id).first()
+        x.append(venue_details.venue_name)
+        y.append(i.venue_capacity)
+
+    print(x,y)
+    plt.bar(x,y, width=0.5)
+    plt.xlabel('Venue Name')
+    plt.ylabel('Venue Capacity')
+    
+    plt.savefig(f"./static/{current_user.id}_venue.png")
+    plt.clf()
+
     return render_template("admin_summary.html")
 
 @app.route("/create/venue", methods=["POST"])
@@ -317,3 +357,4 @@ def show_rating(booking_id):
     db.session.commit()
 
     return redirect(url_for('user_bookings'))
+

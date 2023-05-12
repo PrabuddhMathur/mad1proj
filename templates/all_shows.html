@@ -29,7 +29,7 @@
 		{% for venue in venues %}
 		<div class="card m-1">
 			<div class="card-header" style="background-color: #BBE38F">
-				<h5 class="card-title">Venue : {{ venue["venue_name"] }}</h5>
+				<h5 class="card-title">Venue : {{ venue["venue_name"] }} {{ venue['venue_location'] }}</h5>
 			</div>
 			<div class="card-body">
 				<div class="container ">

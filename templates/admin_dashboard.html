@@ -119,11 +119,11 @@
 															<div class="row m-1">
 																<label class="form-label col-4" for="">Ticket Price</label>
 																<span class="col-1 input-group-addon">&#x20B9;</span>
-																<input class="col-5" type="number" name="show_price" value="{{ show['show_ticketprice'] }}">
+																<input class="col-5" min="0" type="number" name="show_price" value="{{ show['show_ticketprice'] }}">
 															</div>
 															<div class="row m-1">
 																<label class="form-label col-4" for="">Available Tickets</label>
-																<input class="col-6" max="{{ venue['venue_capacity'] }}" type="number" name="available_tickets" value="{{ show_venue['available_tickets'] }}" required>
+																<input class="col-6" min="0" max="{{ venue['venue_capacity'] }}" type="number" name="available_tickets" value="{{ show_venue['available_tickets'] }}" required>
 															</div>
 														</div>
 														</div>
@@ -184,7 +184,7 @@
 														</div>
 														<div class="row m-1">
 															<label class="form-label col-4" for="">Capacity</label>
-															<input class="col-5" type="number" name="capacity" value="{{ venue['venue_capacity'] }}">
+															<input class="col-5" min="0" type="number" name="capacity" value="{{ venue['venue_capacity'] }}">
 														</div>
 													</div>
 												</div>
@@ -236,11 +236,11 @@
 														<div class="row m-1">
 															<label class="form-label col-4" for="">Ticket Price</label>
 															<span class="col-1 input-group-addon">&#x20B9;</span>
-															<input class="col-5" type="number" name="show_price" required>
+															<input class="col-5" min="0" type="number" name="show_price" required>
 														</div>
 														<div class="row m-1">
 															<label class="form-label col-4" for="">Available Tickets</label>
-															<input class="col-6" max="{{ venue['venue_capacity'] }}" type="number" name="available_tickets" required>
+															<input class="col-6" min="0" max="{{ venue['venue_capacity'] }}" type="number" name="available_tickets" required>
 														</div>
 													</div>
 												</div>

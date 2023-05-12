@@ -24,17 +24,14 @@
 </nav>
 <div class="container">
 	<div class="row justify-content-center m-2">
-		<div class="row">
-			<h2>Showing results with <br> {{search_value}} : {{search_query}}</h2>
-		</div>
 		<div class="container">
 			<div class="row justify-content-center">
 				{% if search_value == "Show" %}
-				<p class="card-text fs-2 fw-medium text-center">All available shows</p>
-				{% for venue in venues %}
-				{% for result in results %}
-				{% for show_venue in show_venues %}
-				{% if venue["venue_id"]==show_venue["venue_id"]  and show_venue["show_id"] == result["show_id"]   %}
+				<p class="card-text fs-2 fw-medium text-center">All available venues with {{ search_query }}</p>
+					{% for venue in venues %}
+					{% for result in results %}
+					{% for show_venue in show_venues %}
+					{% if venue["venue_id"]==show_venue["venue_id"]  and show_venue["show_id"] == result["show_id"]   %}
 						<div class="col-4 m-1 p-1">
 							<div class="card">
 								<div class="card-header" style="background-color: #D6ECA4">
@@ -42,13 +39,14 @@
 								</div>
 								<div class="card-body">
 									<div class="row justify-content-center">
-										<div class="col-4 text-end ">
+										<div class="col-5 text-end ">
 											<p class="card-text m-1 text-nowrap">Venue :</p>
 											<p class="card-text m-1 text-nowrap">Location :</p>
 											<p class="card-text m-1 text-nowrap">Timing :</p>
 											<p class="card-text m-1 text-nowrap">Genre :</p>
 											<p class="card-text m-1 text-nowrap">Rating :</p>
 											<p class="card-text m-1 text-nowrap">Ticket Price :</p>
+											<p class="card-text m-1 text-no-wrap">Available Tickets :</p>
 										</div>
 										<div class="col-5 text-start">
 											<p class="card-text m-1 text-nowrap">{{ venue['venue_name'] }}</p>
@@ -57,6 +55,7 @@
 											<p class="card-text m-1 text-nowrap">{{ result["show_tags"] }}</p>
 											<p class="card-text m-1 text-nowrap">{{ result["show_rating"] }}</p>
 											<p class="card-text m-1 text-nowrap">&#x20B9;{{ result["show_ticketprice"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ show_venue["available_tickets"] }}</p>
 										</div>
 									</div>
 								</div>
@@ -80,7 +79,7 @@
 															</div>
 															<div class="row justify-content-center">
 																<p class="col-4 modal-title">Tickets</p>
-																<input class="col-4" type="number" name="booking_tickets"></input>
+																<input class="col-4" min="1" max="{{ show_venue['available_tickets'] }}" type="number" name="booking_tickets"></input>
 															</div>
 															<div class="row justify-content-center">
 																<p class="col-4 modal-title">Price</p>
@@ -109,20 +108,404 @@
 					{% endfor %}
 				{% elif search_value == "Venue" %}
 				<p class="card-text fs-2 fw-medium text-center">All available shows in {{ search_query }}</p>
-				{% for venue in venues%}
-				{% endfor %}
+					{% for show in shows %}
+					{% for result in results %}
+					{% for show_venue in show_venues %}
+					{% if result["venue_id"]==show_venue["venue_id"]  and show_venue["show_id"] == show["show_id"] %}
+						<div class="col-4 m-1 p-1">
+							<div class="card">
+								<div class="card-header" style="background-color: #D6ECA4">
+									<h5 class="card-title">{{ show['show_name'] }}</h5>
+								</div>
+								<div class="card-body">
+									<div class="row justify-content-center">
+										<div class="col-5 text-end ">
+											<p class="card-text m-1 text-nowrap">Show :</p>
+											<p class="card-text m-1 text-nowrap">Location :</p>
+											<p class="card-text m-1 text-nowrap">Timing :</p>
+											<p class="card-text m-1 text-nowrap">Genre :</p>
+											<p class="card-text m-1 text-nowrap">Rating :</p>
+											<p class="card-text m-1 text-nowrap">Ticket Price :</p>
+											<p class="card-text m-1 text-no-wrap">Available Tickets :</p>
+										</div>
+										<div class="col-5 text-start">
+											<p class="card-text m-1 text-nowrap">{{ show['show_name'] }}</p>
+											<p class="card-text m-1 text-nowrap" >{{ result["venue_location"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ show["show_timing"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ show["show_tags"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ show["show_rating"] }}</p>
+											<p class="card-text m-1 text-nowrap">&#x20B9;{{ show["show_ticketprice"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ show_venue["available_tickets"] }}</p>
+										</div>
+									</div>
+								</div>
+								<div class="card-footer">
+									<div class="row justify-content-center">
+										<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{ show['show_id'] }}create_booking">Book</button>
+									</div>
+									<!--Create Show Modal-->
+									<div class="modal fade" id="{{ show['show_id'] }}create_booking" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered">
+											<div class="modal-content" >
+												<div class="modal-header" style="background-color: #BBE38F">
+													<h1 class="modal-title fs-5" id="staticBackdropLabel">Book Show</h1>
+													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+												<form action="/create/booking/{{ show['show_id'] }}", method="POST">
+													<div class="modal-body">
+														<div class="container">
+															<div class="row text-center">
+																<h4 class="col-12 modal-title">{{ show['show_name'] }}</h4>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Tickets</p>
+																<input class="col-4" min="1" max="{{ show_venue['available_tickets'] }}" type="number" name="booking_tickets"></input>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Price</p>
+																<p class="col-4 modal-title">₹{{ show['show_ticketprice'] }}</p>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Total</p>
+																<p class="col-4 modal-title"></p>
+															</div>
+														</div>
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+														<button type="submit" class="btn btn-success">Book</button>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					{% endfor %}
+					{% endfor %}
+					{% endfor %}
 				{% elif search_value == "Location" %}
 				<p class="card-text fs-2 fw-medium text-center">All available shows in {{ search_query }}</p>
-
+					{% for show in shows %}
+					{% for result in results %}
+					{% for show_venue in show_venues %}
+					{% if result["venue_id"]==show_venue["venue_id"]  and show_venue["show_id"] == show["show_id"] %}
+						<div class="col-4 m-1 p-1">
+							<div class="card">
+								<div class="card-header" style="background-color: #D6ECA4">
+									<h5 class="card-title">{{ show['show_name'] }}</h5>
+								</div>
+								<div class="card-body">
+									<div class="row justify-content-center">
+										<div class="col-5 text-end ">
+											<p class="card-text m-1 text-nowrap">Show :</p>
+											<p class="card-text m-1 text-nowrap">Venue :</p>
+											<p class="card-text m-1 text-nowrap">Timing :</p>
+											<p class="card-text m-1 text-nowrap">Genre :</p>
+											<p class="card-text m-1 text-nowrap">Rating :</p>
+											<p class="card-text m-1 text-nowrap">Ticket Price :</p>
+											<p class="card-text m-1 text-no-wrap">Available Tickets :</p>
+										</div>
+										<div class="col-5 text-start">
+											<p class="card-text m-1 text-nowrap">{{ show['show_name'] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ result["venue_name"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ show["show_timing"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ show["show_tags"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ show["show_rating"] }}</p>
+											<p class="card-text m-1 text-nowrap">&#x20B9;{{ show["show_ticketprice"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ show_venue["available_tickets"] }}</p>
+										</div>
+									</div>
+								</div>
+								<div class="card-footer">
+									<div class="row justify-content-center">
+										<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{ show['show_id'] }}create_booking">Book</button>
+									</div>
+									<!--Create Show Modal-->
+									<div class="modal fade" id="{{ show['show_id'] }}create_booking" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered">
+											<div class="modal-content" >
+												<div class="modal-header" style="background-color: #BBE38F">
+													<h1 class="modal-title fs-5" id="staticBackdropLabel">Book Show</h1>
+													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+												<form action="/create/booking/{{ show['show_id'] }}", method="POST">
+													<div class="modal-body">
+														<div class="container">
+															<div class="row text-center">
+																<h4 class="col-12 modal-title">{{ show['show_name'] }}</h4>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Tickets</p>
+																<input class="col-4" min="1" max="{{ show_venue['available_tickets'] }}" type="number" name="booking_tickets"></input>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Price</p>
+																<p class="col-4 modal-title">₹{{ show['show_ticketprice'] }}</p>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Total</p>
+																<p class="col-4 modal-title"></p>
+															</div>
+														</div>
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+														<button type="submit" class="btn btn-success">Book</button>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					{% endfor %}
+					{% endfor %}
+					{% endfor %}
 				{% elif search_value == "Timing" %}
 				<p class="card-text fs-2 fw-medium text-center">All available shows at {{ search_query }}</p>
-
+					{% for venue in venues %}
+					{% for result in results %}
+					{% for show_venue in show_venues %}
+					{% if venue["venue_id"]==show_venue["venue_id"]  and show_venue["show_id"] == result["show_id"]   %}
+						<div class="col-4 m-1 p-1">
+							<div class="card">
+								<div class="card-header" style="background-color: #D6ECA4">
+									<h5 class="card-title">{{ result['show_timing'] }}</h5>
+								</div>
+								<div class="card-body">
+									<div class="row justify-content-center">
+										<div class="col-5 text-end ">
+											<p class="card-text m-1 text-nowrap">Show :</p>
+											<p class="card-text m-1 text-nowrap">Venue :</p>
+											<p class="card-text m-1 text-nowrap">Location :</p>
+											<p class="card-text m-1 text-nowrap">Genre :</p>
+											<p class="card-text m-1 text-nowrap">Rating :</p>
+											<p class="card-text m-1 text-nowrap">Ticket Price :</p>
+											<p class="card-text m-1 text-no-wrap">Available Tickets :</p>
+										</div>
+										<div class="col-5 text-start">
+											<p class="card-text m-1 text-nowrap">{{ result["show_name"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ venue["venue_name"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ venue["venue_location"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ result["show_tags"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ result["show_rating"] }}</p>
+											<p class="card-text m-1 text-nowrap">&#x20B9;{{ result["show_ticketprice"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ show_venue["available_tickets"] }}</p>
+										</div>
+									</div>
+								</div>
+								<div class="card-footer">
+									<div class="row justify-content-center">
+										<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{ result['show_id'] }}create_booking">Book</button>
+									</div>
+									<!--Create Show Modal-->
+									<div class="modal fade" id="{{ result['show_id'] }}create_booking" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered">
+											<div class="modal-content" >
+												<div class="modal-header" style="background-color: #BBE38F">
+													<h1 class="modal-title fs-5" id="staticBackdropLabel">Book Show</h1>
+													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+												<form action="/create/booking/{{ result['show_id'] }}", method="POST">
+													<div class="modal-body">
+														<div class="container">
+															<div class="row text-center">
+																<h4 class="col-12 modal-title">{{ result['show_name'] }}</h4>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Tickets</p>
+																<input class="col-4" min="1" max="{{ show_venue['available_tickets'] }}" type="number" name="booking_tickets"></input>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Price</p>
+																<p class="col-4 modal-title">₹{{ result['show_ticketprice'] }}</p>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Total</p>
+																<p class="col-4 modal-title"></p>
+															</div>
+														</div>
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+														<button type="submit" class="btn btn-success">Book</button>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					{% endfor %}
+					{% endfor %}
+					{% endfor %}
 				{% elif search_value == "Genre" %}
 				<p class="card-text fs-2 fw-medium text-center">All available shows with genre {{ search_query }}</p>
-
+					{% for venue in venues %}
+					{% for result in results %}
+					{% for show_venue in show_venues %}
+					{% if venue["venue_id"]==show_venue["venue_id"]  and show_venue["show_id"] == result["show_id"] %}
+						<div class="col-4 m-1 p-1">
+							<div class="card">
+								<div class="card-header" style="background-color: #D6ECA4">
+									<h5 class="card-title">{{ results['show_tags'] }}</h5>
+								</div>
+								<div class="card-body">
+									<div class="row justify-content-center">
+										<div class="col-5 text-end ">
+											<p class="card-text m-1 text-nowrap">Show :</p>
+											<p class="card-text m-1 text-nowrap">Venue :</p>
+											<p class="card-text m-1 text-nowrap">Location :</p>
+											<p class="card-text m-1 text-nowrap">Timing :</p>
+											<p class="card-text m-1 text-nowrap">Rating :</p>
+											<p class="card-text m-1 text-nowrap">Ticket Price :</p>
+											<p class="card-text m-1 text-no-wrap">Available Tickets :</p>
+										</div>
+										<div class="col-5 text-start">
+											<p class="card-text m-1 text-nowrap">{{ result["show_name"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ venue["venue_name"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ venue["venue_location"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ result["show_timing"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ result["show_rating"] }}</p>
+											<p class="card-text m-1 text-nowrap">&#x20B9;{{ result["show_ticketprice"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ show_venue["available_tickets"] }}</p>
+										</div>
+									</div>
+								</div>
+								<div class="card-footer">
+									<div class="row justify-content-center">
+										<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{ result['show_id'] }}create_booking">Book</button>
+									</div>
+									<!--Create Show Modal-->
+									<div class="modal fade" id="{{ result['show_id'] }}create_booking" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered">
+											<div class="modal-content" >
+												<div class="modal-header" style="background-color: #BBE38F">
+													<h1 class="modal-title fs-5" id="staticBackdropLabel">Book Show</h1>
+													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+												<form action="/create/booking/{{ result['show_id'] }}", method="POST">
+													<div class="modal-body">
+														<div class="container">
+															<div class="row text-center">
+																<h4 class="col-12 modal-title">{{ result['show_name'] }}</h4>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Tickets</p>
+																<input class="col-4" min="1" max="{{ show_venue['available_tickets'] }}" type="number" name="booking_tickets"></input>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Price</p>
+																<p class="col-4 modal-title">₹{{ result['show_ticketprice'] }}</p>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Total</p>
+																<p class="col-4 modal-title"></p>
+															</div>
+														</div>
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+														<button type="submit" class="btn btn-success">Book</button>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					{% endfor %}
+					{% endfor %}
+					{% endfor %}
 				{% elif search_value == "Rating" %}
 				<p class="card-text fs-2 fw-medium text-center">All available shows with rating {{ search_query }}</p>
-
+					{% for venue in venues %}
+					{% for result in results %}
+					{% for show_venue in show_venues %}
+					{% if venue["venue_id"]==show_venue["venue_id"]  and show_venue["show_id"] == result["show_id"] %}
+						<div class="col-4 m-1 p-1">
+							<div class="card">
+								<div class="card-header" style="background-color: #D6ECA4">
+									<h5 class="card-title">{{ show['show_rating'] }}</h5>
+								</div>
+								<div class="card-body">
+									<div class="row justify-content-center">
+										<div class="col-5 text-end ">
+											<p class="card-text m-1 text-nowrap">Show :</p>
+											<p class="card-text m-1 text-nowrap">Venue :</p>
+											<p class="card-text m-1 text-nowrap">Location :</p>
+											<p class="card-text m-1 text-nowrap">Timing :</p>
+											<p class="card-text m-1 text-nowrap">Genre :</p>
+											<p class="card-text m-1 text-nowrap">Ticket Price :</p>
+											<p class="card-text m-1 text-no-wrap">Available Tickets :</p>
+										</div>
+										<div class="col-5 text-start">
+											<p class="card-text m-1 text-nowrap">{{ result["show_name"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ venue["venue_name"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ venue["venue_location"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ result["show_timing"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ result["show_tags"] }}</p>
+											<p class="card-text m-1 text-nowrap">&#x20B9;{{ result["show_ticketprice"] }}</p>
+											<p class="card-text m-1 text-nowrap">{{ show_venue["available_tickets"] }}</p>
+										</div>
+									</div>
+								</div>
+								<div class="card-footer">
+									<div class="row justify-content-center">
+										<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#{{ result['show_id'] }}create_booking">Book</button>
+									</div>
+									<!--Create Show Modal-->
+									<div class="modal fade" id="{{ result['show_id'] }}create_booking" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered">
+											<div class="modal-content" >
+												<div class="modal-header" style="background-color: #BBE38F">
+													<h1 class="modal-title fs-5" id="staticBackdropLabel">Book Show</h1>
+													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+												<form action="/create/booking/{{ result['show_id'] }}", method="POST">
+													<div class="modal-body">
+														<div class="container">
+															<div class="row text-center">
+																<h4 class="col-12 modal-title">{{ result['show_name'] }}</h4>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Tickets</p>
+																<input class="col-4" min="1" max="{{ show_venue['available_tickets'] }}" type="number" name="booking_tickets"></input>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Price</p>
+																<p class="col-4 modal-title">₹{{ result['show_ticketprice'] }}</p>
+															</div>
+															<div class="row justify-content-center">
+																<p class="col-4 modal-title">Total</p>
+																<p class="col-4 modal-title"></p>
+															</div>
+														</div>
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+														<button type="submit" class="btn btn-success">Book</button>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					{% endfor %}
+					{% endfor %}
+					{% endfor %}
 				{% endif %}
 			</div>
 		</div>
